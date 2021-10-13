@@ -1,0 +1,338 @@
+1. QUERY TO FIND SECOND HIGHEST SALARY OF EMPLOYEE?
+
+SELECT DISTINCT SALARY FROM EMPLOYEE E1 WHERE 2 = SELECT COUNT(DISTINCT SALARY) FROM EMPLOYEE E2 WHERE E1.SALARY<=E2.SALARY;
+(OR)
+SELECT MIN(SALARY)FROM(SELECT DISTINCT SALARY FROM EMP ORDER BY SALARY DESC)WHERE ROWNUM<=2;
+
+--------------------------------------------------------------------------------------------------------
+
+2.QUERY TO FIND DUPLICATE ROWS IN TABLE?(CLICK HERE FOR EXPLAINATION )
+
+SELECT * FROM EMPLOYEE A WHERE ROWID <> (SELECT MAX(ROWID) FROM EMPLOYEE B WHERE A.EMPLOYEE_NUM=B.EMPLOYEE_NUM);
+/
+SELECT * FROM EMP_DUP E1
+WHERE EXISTS
+(SELECT * FROM EMP_DUP E2
+WHERE E1.EMPNO = E2.EMPNO
+AND E1.ROWID > E2.ROWID)
+
+--------------------------------------------------------------------------------------------------------
+
+3. HOW TO GET 3 HIGHEST SALARIES RECORDS FROM EMPLOYEE TABLE?
+
+SELECT DISTINCT SALARY FROM EMPLOYEE A WHERE 3 >= (SELECT COUNT(DISTINCT SALARY) FROM EMPLOYEE B WHERE A.SALARY <= B.SALARY) ORDER BY A.SALARY DE
+(OR)
+SELECT MIN(SALARY)FROM(SELECT DISTINCT SALARY FROM EMP ORDER BY SALARY DESC)WHERE ROWNUM<=3;
+
+--------------------------------------------------------------------------------------------------------
+
+4. DISPLAY LAST 50% RECORDS FROM EMPLOYEE TABLE?
+
+SELECT ROWNUM,E.* FROM EMPLOYEE E
+MINUS
+SELECT ROWNUM,E.* FROM EMPLOYEE E WHERE ROWNUM<=(SELECT COUNT(*)/2) FROM EMPLOYEE);
+
+--------------------------------------------------------------------------------------------------------
+
+5. HOW TO GET DISTINCT RECORDS FROM THE TABLE WITHOUT USING DISTINCT KEYWORD.
+
+SELECT * FROM EMPLOYEE A WHERE  ROWID = (SELECT MAX(ROWID) FROM EMPLOYEE B WHERE  A.EMPLOYEE_NO=B.EMPLOYEE_NO);
+
+--------------------------------------------------------------------------------------------------------
+
+6. HOW TO WRITE SQL QUERY FOR THE BELOW SCENARIO
+	I/P:ORACLE
+
+	O/P:
+	O
+	R
+	A
+	C
+	L
+	E
+I.E, SPLITTING INTO MULTIPLE COLUMNS A STRING USING SQL.
+
+SELECT SUBSTR(‘ORACLE’,LEVEL,1) FROM DUAL
+CONNECT BY LEVEL<= LENGTH(‘ORACLE’);
+
+--------------------------------------------------------------------------------------------------------
+
+7. HOW TO DISPLAY FOLLOWING USING QUERY?
+
+*
+
+**
+
+***
+WE CANNOT USE DUAL TABLE TO DISPLAY OUTPUT GIVEN ABOVE. TO DISPLAY OUTPUT USE ANY TABLE. I AM USING STUDENT TABLE.
+ 
+SELECT LPAD (‘*’, ROWNUM,’*’) FROM STUDENT WHERE ROWNUM <4;
+
+--------------------------------------------------------------------------------------------------------
+
+8. HOW TO REMOVE DUPLICATE ROWS FROM TABLE? 
+
+SELECT ROLLNO FROM STUDENT WHERE ROWID <>
+(SELECT MAX (ROWID) FROM STUDENT B WHERE ROLLNO=B.ROLLNO);
+
+/
+
+DELETE FROM STUDENT WHERE ROWID <>
+(SELECT MAX (ROWID) FROM STUDENT B WHERE ROLLNO=B.ROLLNO);
+
+--------------------------------------------------------------------------------------------------------
+
+9. HOW TO FIND COUNT OF DUPLICATE ROWS?
+
+SELECT ROLLNO, COUNT (ROLLNO) FROM STUDENT
+GROUP BY ROLLNO
+HAVING COUNT (ROLLNO)>1
+ORDER BY COUNT (ROLLNO) DESC;
+
+--------------------------------------------------------------------------------------------------------
+
+10. FIND THE 3RD MAX SALARY IN THE EMP TABLE.
+
+SELECT DISTINCT SAL FROM EMP E1 WHERE 3 = (SELECT COUNT(DISTINCT SAL) FROM EMP E2 WHERE E1.SAL <= E2.SAL);
+
+--------------------------------------------------------------------------------------------------------
+
+11. FIND THE 3RD MIN SALARY IN THE EMP TABLE.
+
+SELECT DISTINCT SAL FROM EMP E1 WHERE 3 = (SELECT COUNT(DISTINCT SAL) FROM EMP E2WHERE E1.SAL >= E2.SAL);
+
+--------------------------------------------------------------------------------------------------------
+
+12. HOW TO GET 3 MAX SALARIES ?
+
+SELECT DISTINCT SAL FROM EMP A WHERE 3 >= (SELECT COUNT(DISTINCT SAL) FROM EMP B WHERE A.SAL <= B.SAL) ORDER BY A.SAL DESC;
+
+--------------------------------------------------------------------------------------------------------
+
+13. HOW TO GET 3 MIN SALARIES ?
+
+SELECT DISTINCT SAL FROM EMP A  WHERE 3 >= (SELECT COUNT(DISTINCT SAL) FROM EMP B  WHERE A.SAL >= B.SAL);
+
+--------------------------------------------------------------------------------------------------------
+
+14. SELECT DISTINCT RECORDS FROM EMP TABLE.
+
+SELECT * FROM EMP A WHERE  ROWID = (SELECT MAX(ROWID) FROM EMP B WHERE  A.EMPNO=B.EMPNO); 
+
+-------------------------------------------------------------------------------------------------------
+
+15. HOW TO FETCH ONLY COMMON RECORDS FROM TWO TABLES EMP AND EMP1?
+
+(SELECT * FROM EMP) INTERSECT (SELECT * FROM EMP1)
+
+-------------------------------------------------------------------------------------------------------
+
+16. DISPLAY THOSE MANAGERS NAME WHOSE SALARY IS MORE THAN AVERAGE SALARY OF HIS EMPLOYEES?
+
+SELECT A.ENAME FROM EMP A
+WHERE SAL>=( SELECT AVG(D.SAL) FROM EMP D WHERE A.EMPNO = D.MGR GROUP BY D.MGR )
+/
+SELECT M.ENAME FROM EMP M
+WHERE SAL > (SELECT AVG(E.SAL) FROM EMP E WHERE E.MGR=M.EMPNO GROUP BY E.MGR);
+
+-------------------------------------------------------------------------------------------------------
+
+17. LIST THE EMPLOYEES WHOSE SALARY IS MORE THAN 3000 AFTER GIVING 20% INCREMENT.
+
+SELECT * FROM EMP WHERE (1.2*SAL) > 3000 ;
+
+-------------------------------------------------------------------------------------------------------
+
+18. DISPLAY LAST JOINED BUT ONE EMPLOYEE RECORD.
+
+SELECT * FROM EMP A
+WHERE 1 = (SELECT COUNT(DISTINCT(HIREDATE))
+FROM EMP B
+WHERE A.HIREDATE < B.HIREDATE) ;
+
+-------------------------------------------------------------------------------------------------------
+
+19. FIND 3RD MINIMUM SALARY IN THE EMPLOYEE TABLE.
+
+SELECT MIN(SAL) FROM EMP
+WHERE SAL > (SELECT MIN(SAL) FROM EMP WHERE SAL > (SELECT MIN(SAL) FROM EMP));
+
+-------------------------------------------------------------------------------------------------------
+
+20. DISPLAY THOSE EMP WHO HAVEGH SAME MANAGERS?
+
+SELECT DISTINCT A.EMPNO, A.ENAME EMPLOYEE
+FROM EMP A, EMP B
+WHERE A.MGR=B.MGR AND A.EMPNO<>B.EMPNO;
+
+-------------------------------------------------------------------------------------------------------
+
+21. DISPLAY SCOTT S MANAGER S MANAGER DEPARTMENT NAME
+
+SELECT DNAME FROM DEPT WHERE DEPTNO IN (SELECT E.DEPTNO FROM EMP E ,EMP E1,EMP E2
+WHERE E.EMPNO=E1.MGR
+AND E1.EMPNO=E2.MGR
+AND E2.ENAME='SCOTT')
+
+SELECT  DNAME FROM DEPT WHERE DEPTNO IN (SELECT DEPTNO FROM EMP WHERE EMPNO = 
+(SELECT MGR FROM EMP WHERE EMPNO =(SELECT MGR FROM EMP WHERE ENAME='SCOTT')))
+
+-------------------------------------------------------------------------------------------------------
+
+22. REPLACE THIRD CHARACTER WITH * IN THE ENAME COLUMN.
+
+SELECT ENAME,REPLACE(ENAME,SUBSTR(ENAME,3),'*')||SUBSTR(ENAME,4) FROM EMP ;
+
+-------------------------------------------------------------------------------------------------------
+
+23. DISPLAY ODD NUMBER ROWS.
+
+SELECT * FROM (SELECT ROWNUM RN,E.* FROM EMP E)
+WHERE MOD(RN,2) <> 0;
+
+-------------------------------------------------------------------------------------------------------
+
+24. GET ONLY THE NON-MATCHING RECORDS FROM DEPT TABLE (MATCHING RECORDS SHOULDN’T BE SELECTED).
+
+SELECT EMP.*,DEPT.* FROM EMP FULL OUTER JOIN DEPT ON EMP.DEPTNO=DEPT.DEPTNO
+MINUS
+SELECT EMP.*,DEPT.* FROM EMP  JOIN DEPT ON EMP.DEPTNO=DEPT.DEPTNO;
+
+-------------------------------------------------------------------------------------------------------
+
+25. HOW TO FIND THE NO. OF COLUMNS FOR PARTICULAR TABLE IN SQL?
+
+SELECT COUNT (COLUMN_NAME) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'DEPT' ;
+/
+SELECT MAX(COLUMN_ID) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'EMP' ;
+
+-------------------------------------------------------------------------------------------------------
+
+26. HOW TO FIND THE NOT NULL COLUMN ALONE IN A TABLE IN SQL?
+
+SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE NULLABLE = 'N' AND TABLE_NAME = '<TABLE_NAME>' 
+
+-------------------------------------------------------------------------------------------------------
+
+27. COUNT NUMBER OF NULL RECORDS IN A COLUMN?
+
+SELECT COUNT(*) FROM (
+SELECT * FROM EMP
+MINUS
+SELECT * FROM EMP WHERE COMM IS NOT NULL) ;
+/
+SELECT * FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'EMP' AND NUM_NULLS <> 0 
+
+-------------------------------------------------------------------------------------------------------
+
+28. GIVE A STRING OF FORMAT ‘NN/NN’, VERIFY THAT THE FIRST AND LAST TWO CHARACTERS ARE NUMBERS AND THAT THE MIDDLE CHARACTER IS’/’. 
+    PRINT THE EXPRESSION ‘NUMBER’ IF VALID, ‘NOT NUM’ IF NOT VALID. 
+    USE THE FOLLOWING VALUES TO TEST YOUR SOLUTION. ‘12/34’,’01/1A’, ‘99/98’.
+
+SELECT STR,DECODE(STR,REGEXP_SUBSTR(STR,'^[0-9]+/[0-9]+$'),'NUMBER','NOT NUM') EXP FROM DAT;
+/
+
+SELECT CASE WHEN ASCII(SUBSTR('99/98',1,1)) BETWEEN 48 AND 57
+AND ASCII(SUBSTR('99/98',2,1)) BETWEEN 48 AND 57
+AND SUBSTR('99/98',3,1) ='/'
+AND ASCII(SUBSTR('99/98',4,1)) BETWEEN 48 AND 57
+AND ASCII(SUBSTR('99/98',5,1)) BETWEEN 48 AND 57
+THEN 'NUMBER' ELSE 'NOT NUM' END FROM DUAL;
+
+-------------------------------------------------------------------------------------------------------
+
+29. HOW TO FIND THE MAX SALARY WITHOUT MAX FUNCTION IN SQL?
+
+SELECT * FROM EMP E1
+WHERE 1 = (SELECT COUNT(DISTINCT(SAL)) FROM EMP E2 WHERE E1.SAL <= E2.SAL);
+/
+SELECT * FROM EMP WHERE SAL >= ALL (SELECT SAL FROM EMP)
+
+-------------------------------------------------------------------------------------------------------
+
+30. WHAT IS THE ALTERNATE FOR DESCRIPTION IN SQL?
+
+SELECT COLUMN_NAME NAME, DECODE (NULLABLE,'N','NOT NULL','Y',' ')"NULL", CONCAT (DATA_TYPE, DATA_LENGTH) TYPE FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'DEPT' ;
+
+-------------------------------------------------------------------------------------------------------
+
+31. HOW TO FIND THE DATABASE NAME IN SQL?
+
+SELECT * FROM GLOBAL_NAME; 	--XE,ORCL
+
+------------------------------------------------------------------------------------------------------
+
+32. HOW TO ELIMINATE DUPLICATE VALUES IN A TABLE IN SQL?
+
+DELETE FROM EMP_DUP WHERE ROWID NOT IN (SELECT MAX (ROWID) FROM EMP_DUP GROUP BY EMPNO);
+
+-------------------------------------------------------------------------------------------------------
+
+33. HOW TO GET THE TIME DIFFERENCE BETWEEN TWO DATE COLUMNS?
+
+SELECT FLOOR ((DATE1-DATE2)*24*60*60)/3600) || ' HOURS ' || FLOOR ((((DATE1-DATE2)*24*60*60) -
+FLOOR (((DATE1-DATE2)*24*60*60)/3600)*3600)/60) || ' MINUTES ' || ROUND ((((DATE1-DATE2)*24*60*60) -
+FLOOR (((DATE1-DATE2)*24*60*60)/3600)*3600 - (FLOOR ((((DATE1-DATE2)*24*60*60) -
+FLOOR (((DATE1-DATE2)*24*60*60)/3600)*3600)/60)*60))) || ' SECS ' TIME_DIFFERENCE FROM DUAL;
+
+--------------------------------------------------------------------------------------------------------
+
+34. DISPLAY THE EMPNO, ENAME, JOB, HIREDATE, EXP OF ALL MGRS ?
+
+SELECT EMPNO,ENAME,JOB,HIREDATE,MONTHS_BETWEEN(SYSDATE,HIREDATE) EXP
+FROM EMP
+WHERE EMPNO IN (SELECT MGR FROM EMP);
+
+--------------------------------------------------------------------------------------------------------
+
+35. DISPLAY ALL THE DETAILS OF ALL ‘MGRS’?
+
+SELECT * FROM EMP
+WHERE EMPNO IN (SELECT MGR FROM EMP) ;
+
+--------------------------------------------------------------------------------------------------------
+
+36. LIST THE MOST RECENTLY HIRED EMP OF GRADE3 BELONGS TO LOCATION CHICAGO.
+
+SELECT * FROM EMP E WHERE E.DEPTNO IN ( SELECT D.DEPTNO FROM DEPT D WHERE D.LOC = 'CHICAGO') AND
+E.HIREDATE IN (SELECT MAX(HIREDATE) FROM EMP WHERE EMPNO IN (SELECT EMPNO FROM EMP E,SALGRADE S
+WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL AND S.GRADE = 3)) ;
+/
+SELECT * FROM EMP E,DEPT D WHERE D.LOC='CHICAGO'
+AND HIREDATE IN(SELECT MAX(HIREDATE) FROM EMP E,SALGRADE S
+WHERE SAL BETWEEN LOSAL AND HISAL AND GRADE=3);
+
+--------------------------------------------------------------------------------------------------------
+
+37. LIST THE DETAILS OF THE EMPLOYEE BELONGS TO NEWYORK WITH GRADE 3 TO 5 EXCEPT ‘PRESIDENT’ WHOSE SAL> THE HIGHEST PAID EMPLOYEE OF CHICAGO 
+    IN A GROUP WHERE THERE IS MANAGER AND SALESMAN NOT WORKING UNDER KING?
+
+SELECT E.*,D.DNAME,D.LOC,S.GRADE
+FROM EMP E,DEPT D,SALGRADE S
+WHERE E.DEPTNO = D.DEPTNO
+AND SAL BETWEEN LOSAL AND HISAL
+AND D.LOC = 'NEW YORK'
+AND S.GRADE BETWEEN 3 AND 5
+AND E.JOB <> 'PRESIDENT'
+AND E.SAL > (SELECT MAX(SAL) FROM EMP WHERE DEPTNO IN (SELECT DEPTNO FROM DEPT WHERE LOC = 'CHICAGO') AND JOB IN ('MANAGER','SALESMAN') AND MGR NOT IN(SELECT EMPNO FROM EMP WHERE ENAME='KING')) ;
+
+--------------------------------------------------------------------------------------------------------
+
+38. GET ONLY THE NON-MATCHING RECORDS FROM DEPT TABLE (MATCHING RECORDS SHOULDN’T BE SELECTED).
+
+SELECT EMP.*,DEPT.* FROM EMP full outer join DEPT on EMP.DEPTNO=DEPT.DEPTNO
+minus
+SELECT EMP.*,DEPT.* FROM EMP join DEPT on EMP.DEPTNO=DEPT.DEPTNO
+
+--------------------------------------------------------------------------------------------------------
+
+39. In ORACLE , you can use the ESCAPE keyword to search for strings containing ‘%’. Otherwise it would be considered as a META CHARACTER . Using the escape character ( to search for strings containing like ‘ABC %%TRF’, ‘TR%FF’ or ‘%GH’)
+
+Solution 1
+Answer: SELECT col_name FROM tbl_name WHERE col_name LIKE '%?%%' ESCAPE '?';
+Here ‘?’ can be replaced with any other character.
+
+Solution 2
+Answer: SELECT col_name FROM tbl_name WHERE instr(col_name,'%') > 0
+
+--------------------------------------------------------------------------------------------------------

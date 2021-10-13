@@ -1,0 +1,35 @@
+What is the minimum and maximum amount of columns a table can have?
+
+Between 1 and 254.
+
+---------------------------------------------------------------------------------------------------
+
+Display the number of employees who are getting salary less than the Blake’s manager.
+
+select count(*) from emp
+where sal < (select SAL from emp where empno in (select mgr from emp where ename = 'BLAKE'))
+
+---------------------------------------------------------------------------------------------------
+
+Display department name of the employees who earn maximum salary and have no reporting manager?
+
+SELECT DNAME FROM DEPT
+WHERE DEPTNO IN (SELECT DEPTNO FROM EMP
+WHERE SAL=(SELECT MAX(SAL) FROM EMP WHERE MGR IS NULL));
+
+---------------------------------------------------------------------------------------------------
+
+List the employee department name and loc of all the employees who are clerk,reporting to blake and salary is lesser than martin salary?
+
+select dname ,loc from dept
+where deptno in (select deptno from emp
+where job ='CLERK' and mgr in (select empno from emp
+where ename ='BLAKE' or sal < (select sal from emp
+where ename ='MARTIN')));
+
+---------------------------------------------------------------------------------------------------
+select distinct Gender wise data 
+&
+select distinct gender wise and group by gender wise data
+
+invalid output/error

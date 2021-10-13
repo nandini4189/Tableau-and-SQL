@@ -1,0 +1,211 @@
+select * from power_bi.sample_superstore
+
+select extract(year from orderdate)as year,
+		extract(quarter from orderdate) as quarter,
+	extract(month from orderdate) as month,
+	profit,
+		(case when extract(year from orderdate)=2014
+              then profit
+              else 0 end
+          ) as prevoius_year_profit
+		  --sum(profit)-prevoius_year_profit as difference
+from power_bi.sample_superstore
+
+
+select sum (case when cast(date_trunc('month',orderdate)=
+		   date_trunc('month',extract(month from orderdate) then sum(sales)
+		  else null end)as cur_sales,
+		  sum(case when date_trunc('month',order_date)=date_trunc('month',now()-interval '1' MONTH) then sum(sales)
+			  else null end) as prev_sales from power_bi.sample_superstore
+ 
+
+
+
+
+select * from power_bi.sample_superstore
+
+
+select extract(year from orderdate) as year,
+		extract(quarter from orderdate) as quarter,
+	extract(month from orderdate) as month,
+	sum(Profit)
+from power_bi.sample_superstore
+group by 1,2,3
+order by 1
+
+select extract(year from orderdate) as year,
+		concat(extract(year from orderdate), '_ ', extract(quarter from orderdate)) as Current_quarter,
+		--concat(extract(year from orderdate),'_', extract(quarter from orderdate)-1) 
+		orderdate >= date_trunc('quarter',now())-interval '3 months'
+and orderdate < date_trunc('quarter',now())	as Prev_quarter,
+	--extract(month from orderdate) as month,
+	sum(Profit)
+	--case when extract(year from orderdate)
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2,3
+order by 1
+		
+		
+		
+select extract(year from orderdate) as year,
+		extract(quarter from orderdate) as Current_quarter,
+		(case when extract (quarter from orderdate)= extract(quarter from now()-interval '3 months')  
+and  extract(year from orderdate)=extract(year from now())-1 then sum(sales) end) as Prev_Qtr,
+		sum(sales) as sales
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2
+order by 1
+		
+		
+		
+select extract(year from orderdate) as year,
+		extract(month from orderdate) as Current_month,
+		sum(Sales) as sales
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2
+
+
+
+select sum case when cast(date_trunc('month','2015-01-01')=
+		   date_trunc('month',now()-interval '1' MONTH) then sum(sales)
+		  else null)as date end) as prev_sales from power_bi.sample_superstore
+
+
+select sum(Sales)            
+from power_bi.sample_superstore
+where extract(year from orderdate)=2016
+and extract(quarter from orderdate)
+=extract(quarter from date_trunc('quarter', date '2016-01-01')::date - 3 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+order by 1		
+		
+	SELECT sum(Sales)
+	--(case when extract (year from orderdate)=2015 and
+	--date_trunc('month', orderdate)=
+  --date_trunc('month', orderdate - interval '1' month) then sum(sales) end) as prev_sales
+   from power_bi.sample_superstore
+   where  extract(quarter from orderdate)= cast(to_char(date_trunc(('quarter', date '2015-01-01')::text - 1) character varying);
+		
+
+
+
+
+
+select * from power_bi.sample_superstore
+
+select extract(year from orderdate)as year,
+		extract(quarter from orderdate) as quarter,
+	extract(month from orderdate) as month,
+	profit,
+		(case when extract(year from orderdate)=2014
+              then profit
+              else 0 end
+          ) as prevoius_year_profit
+		  --sum(profit)-prevoius_year_profit as difference
+from power_bi.sample_superstore
+
+
+select sum (case when cast(date_trunc('month',orderdate)=
+		   date_trunc('month',extract(month from orderdate) then sum(sales)
+		  else null end)as cur_sales,
+		  sum(case when date_trunc('month',order_date)=date_trunc('month',now()-interval '1' MONTH) then sum(sales)
+			  else null end) as prev_sales from power_bi.sample_superstore
+ 
+
+
+
+
+select * from power_bi.sample_superstore
+
+
+select extract(year from orderdate) as year,
+		extract(quarter from orderdate) as quarter,
+	extract(month from orderdate) as month,
+	sum(Profit)
+from power_bi.sample_superstore
+group by 1,2,3
+order by 1
+
+select extract(year from orderdate) as year,
+		concat(extract(year from orderdate), '_ ', extract(quarter from orderdate)) as Current_quarter,
+		--concat(extract(year from orderdate),'_', extract(quarter from orderdate)-1) 
+		orderdate >= date_trunc('quarter',now())-interval '3 months'
+and orderdate < date_trunc('quarter',now())	as Prev_quarter,
+	--extract(month from orderdate) as month,
+	sum(Profit)
+	--case when extract(year from orderdate)
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2,3
+order by 1
+		
+		
+		
+select extract(year from orderdate) as year,
+		extract(quarter from orderdate) as Current_quarter,
+		(case when extract (quarter from orderdate)= extract(quarter from now()-interval '3 months')  
+and  extract(year from orderdate)=extract(year from now())-1 then sum(sales) end) as Prev_Qtr,
+		sum(sales) as sales
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2
+order by 1
+		
+		
+		
+select extract(year from orderdate) as year,
+		extract(month from orderdate) as Current_month,
+		sum(Sales) as sales
+from power_bi.sample_superstore
+where extract(year from orderdate) = 2015
+group by 1,2
+
+
+
+select sum case when cast(date_trunc('month','2015-01-01')=
+		   date_trunc('month',now()-interval '1' MONTH) then sum(sales)
+		  else null)as date end) as prev_sales from power_bi.sample_superstore
+
+
+select sum(Sales)            
+from power_bi.sample_superstore
+where extract(year from orderdate)=2016
+and extract(quarter from orderdate)
+=extract(quarter from date_trunc('quarter', date '2016-01-01')::date - 3 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+order by 1		
+		
+	SELECT sum(Sales)
+	--(case when extract (year from orderdate)=2015 and
+	--date_trunc('month', orderdate)=
+  --date_trunc('month', orderdate - interval '1' month) then sum(sales) end) as prev_sales
+   from power_bi.sample_superstore
+   where  extract(quarter from orderdate)= cast(to_char(date_trunc(('quarter', date '2015-01-01')::text - 1) character varying);
+		

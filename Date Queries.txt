@@ -1,0 +1,44 @@
+–> First Day of Current Year:
+
+SELECT TRUNC (SYSDATE , ‘YEAR’) FROM DUAL;
+
+
+
+–> Last Day of Current Year:
+
+SELECT ADD_MONTHS(TRUNC (SYSDATE ,’YEAR’),12)-1 FROM DUAL;
+
+
+
+–> First Day of Previous Year:
+
+SELECT ADD_MONTHS (TRUNC (SYSDATE,’YEAR’), -12) FROM DUAL;
+
+
+
+–> Last Day of Previous Year:
+
+SELECT ADD_MONTHS (TRUNC (SYSDATE, ‘YEAR’), -1 ) +30 FROM DUAL;
+
+
+
+-> find the date of Third Sunday of all the months.
+
+SELECT NEXT_DAY(ADD_MONTHS(TRUNC(SYSDATE,'yy'),LEVEL),'sun')-14 FROM DUAL
+CONNECT BY LEVEL <=12
+
+
+--> Calculate number of weekends in a year? 
+
+select count(*) from (select trunc(sysdate,'yy')+level-1 dy 
+from dual
+where to_char(trunc(sysdate,'yy')+level-1,'dy') in ('sat','sun')
+connect by level <= round(sysdate,'yy') - trunc(sysdate,'yy'));
+
+select count(*) from (
+select trunc(sysdate,'yy')+level-1 count1 from dual
+connect by level<= add_months(last_day((trunc(sysdate,'yy'))),11)-trunc(sysdate,'yy')+1
+)
+where to_char(count1,'dy') in ('sun','sat')
+
+

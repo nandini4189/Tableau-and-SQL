@@ -1,0 +1,162 @@
+
+
+
+
+//custom date::
+
+Custom Date = 
+ADDCOLUMNS (
+CALENDAR (DATE(2018,01,01), DATE(2020,12,31)),
+"DateAsInteger", FORMAT ( [Date], "YYYYMMDD" ),
+"Year", YEAR ( [Date] ),
+"Monthnumber", FORMAT ( [Date], "MM" ),
+"YearMonthnumber", FORMAT ( [Date], "YYYY/MM" ),
+"YearMonthShort", FORMAT ( [Date], "YYYY/mmm" ),
+"MonthNameShort", FORMAT ( [Date], "mmm" ),
+"MonthNameLong", FORMAT ( [Date], "mmmm" ),
+"DayOfWeekNumber", WEEKDAY ( [Date] ),
+"DayOfWeek", FORMAT ( [Date], "dddd" ),
+"DayOfWeekShort", FORMAT ( [Date], "ddd" ),
+"Quarter", "Q" & FORMAT ( [Date], "Q" ),
+"YearQuarter", FORMAT ( [Date], "YYYY" ) & "/Q" & FORMAT ( [Date], "Q" )
+)
+
+
+
+---------------------------------------------------------------------------------------
+
+
+Custom Date2 = 
+VAR FirstFiscalMonth = 3  -- First month of the fiscal year
+VAR FirstDayOfWeek = 0    -- 0 = Sunday, 1 = Monday, ...
+VAR FirstSalesDate = MIN ( Sales[OrderDate] )
+VAR LastSalesDate = MAX ( Sales[OrderDate] )
+VAR FirstFiscalYear =     -- Customizes the first fiscal year to use
+    YEAR ( FirstSalesDate )
+    + 1 * ( MONTH ( FirstSalesDate ) >= FirstFiscalMonth && FirstFiscalMonth > 1)
+VAR LastFiscalYear =      -- Customizes the last fiscal year to use
+    YEAR ( LastSalesDate )
+    + 1 * ( MONTH ( LastSalesDate ) >= FirstFiscalMonth && FirstFiscalMonth > 1)
+RETURN
+GENERATE (
+    VAR FirstDay =
+        DATE (
+            FirstFiscalYear - 1 * (FirstFiscalMonth > 1),
+            FirstFiscalMonth,
+            1
+        )
+ 
+    VAR LastDay =
+        DATE (
+            LastFiscalYear + 1 * (FirstFiscalMonth = 1),
+            FirstFiscalMonth, 1
+        ) - 1
+    RETURN
+        CALENDAR ( FirstDay, LastDay ),
+ 
+    VAR CurrentDate = [Date]
+    VAR Yr = YEAR ( CurrentDate )        -- Year Number
+    VAR Mn = MONTH ( CurrentDate )       -- Month Number (1-12)
+    VAR Mdn = DAY ( CurrentDate )        -- Day of Month
+    VAR DateKey = Yr*10000+Mn*100+Mdn
+    VAR Wd =                             -- Weekday Number (0 = Sunday, 1 = Monday, ...)
+        WEEKDAY ( CurrentDate + 7 - FirstDayOfWeek, 1 )
+    VAR WorkingDay =                     -- Working Day (1 = working, 0 = non-working)
+        ( WEEKDAY ( CurrentDate, 1 ) IN { 2, 3, 4, 5, 6 } )
+    VAR Fyr =                            -- Fiscal Year Number
+        Yr + 1 * ( FirstFiscalMonth > 1 && Mn >= FirstFiscalMonth )
+    VAR Fmn =                            -- Fiscal Month Number (1-12)
+        Mn - FirstFiscalMonth + 1 + 12 * (Mn < FirstFiscalMonth)
+    VAR Fqrn =                           -- Fiscal Quarter (string)
+        ROUNDUP ( Fmn / 3, 0 )
+    VAR Fmqn =
+        MOD ( FMn - 1, 3 ) + 1
+    VAR Fqr =                            -- Fiscal Quarter (string)
+        FORMAT ( Fqrn, "\Q0" )
+    VAR FirstDayOfYear =
+        DATE ( Fyr - 1 * (FirstFiscalMonth > 1), FirstFiscalMonth, 1 )
+    VAR Fydn =
+        SUMX (
+            CALENDAR ( FirstDayOfYear, CurrentDate ),
+            1 * ( MONTH ( [Date] ) <> 2 || DAY ( [Date] ) <> 29 )
+        )
+    RETURN ROW (
+        "DateKey", INT ( DateKey ),
+        "Sequential Day Number", INT ( [Date] ),
+        "Year Month", FORMAT ( CurrentDate, "mmm yyyy" ),
+        "Year Month Number", Yr * 12 + Mn - 1,
+        "Fiscal Year", "FY " & Fyr,
+        "Fiscal Year Number", Fyr,
+        "Fiscal Year Quarter", "F" & Fqr & "-" & Fyr,
+        "Fiscal Year Quarter Number", CONVERT ( Fyr * 4 + FQrn - 1, INTEGER ),
+        "Fiscal Quarter", "F" & Fqr,
+        "Month", FORMAT ( CurrentDate, "mmm" ),
+        "Fiscal Month Number", Fmn,
+        "Fiscal Month in Quarter Number",  Fmqn,
+        "Day of Week", FORMAT ( CurrentDate, "ddd" ),
+        "Day of Week Number", Wd,
+        "Day of Month Number", Mdn,
+        "Day of Fiscal Year Number", Fydn,
+        "Working Day", IF ( WorkingDay, "Working Day", "Non-Working Day" )
+    )
+)
+
+
+
+Business days between two dates.
+
+RoundDown(DateDiff(StartDate.SelectedDate, EndDate.SelectedDate, Days) / 7, 0) * 5 +
+Mod(5 + Weekday(EndDate.SelectedDate) - Weekday(StartDate.SelectedDate), 5) -
+CountIf(Holidays2017, Date >= StartDate.SelectedDate, Date <= EndDate.SelectedDate)
+
+
+
+---------------------------------------------------------------------------------
+
+Delivery Days = 
+CALCULATE(
+    COUNTROWS ( 'Date' ),
+    DATESBETWEEN ( 'Date'[Date],  Sales[Order Date], Sales[Delivery Date] - 1),
+    ALL ( Sales )
+)
+
+
+DeliveryDays = INT ( Sales[Delivery Date] - Sales[Order Date] )
+
+
+
+DeliveryWorkingDays = 
+CALCULATE(
+    COUNTROWS ( 'Date' ),
+    DATESBETWEEN ( 'Date'[Date],  Sales[Order Date], Sales[Delivery Date] - 1 ),
+    'Date'[IsWorkingDay] = TRUE,
+    ALL ( Sales )
+)
+
+
+
+AvgDelivery WD = AVERAGE( Sales[DeliveryWorkingDays] )
+
+
+AvgDelivery = AVERAGE( Sales[DeliveryDays] )
+
+
+
+Date = 
+GENERATE (
+    CALENDARAUTO (),
+    VAR YYYY =
+        YEAR ( [Date] )
+    VAR MMMM =
+        MONTH ( [Date] )
+    RETURN
+        ROW (
+            "Year", CONCATENATE ( "CY ", YYYY ),
+            "Month", FORMAT ( [Date], "mmmm" ),
+            "Month Number", MMMM,
+            "WeekDay", FORMAT ( [Date], "dddd" ),
+			"WeekDay Number",  WEEKDAY( [Date] ),
+            "IsWorkingDay", NOT WEEKDAY( [Date] ) IN { 1,7 }
+        )
+)
+

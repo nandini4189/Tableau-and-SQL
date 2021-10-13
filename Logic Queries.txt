@@ -1,0 +1,182 @@
+--> How to fetch common records from two different tables which has not any joining condition.
+
+Answer:
+
+Select * from Table1
+
+Intersect
+
+Select * from Table2;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to Show the Max marks and min marks together from student table?
+
+Answer:
+
+Select max (marks) from Student
+
+Union
+
+Select min (marks) from Student
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> If marks column contain the comma separated values from Student table. How to calculate the count of that comma separated values?
+
+Answer:
+
+Select Student_name, regexp_count (marks,’,’) + 1 As “Marks Count” from Student;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> Write query to find the repeated characters from your name?
+
+Answer:
+
+select length('shekhar')-length(replace('shekhar','h','')) from dual;
+
+select 'sekhar',regexp_count('shekhar','h') from dual;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> Write query to find the number of vowels from your name?
+
+SELECT contact_id, last_name, REGEXP_COUNT (last_name, 'a|e|i|o|u', 1, 'i') AS total  --'i' case insesnsitive
+FROM contacts;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to display the String vertically in Oracle?
+
+Answer:
+
+select substr(str,level,1) from (
+select 'SHEKHAR' str from dual)
+connect by level <= length(str);
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to get number of Weekends of current month?
+
+select count(dat) from (select trunc(sysdate,'mm')+level-1 dat from dual
+connect by level <= last_day(sysdate)-trunc(sysdate,'mm')+1)
+where to_char(dat,'dy') in ('sat','sun');
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> What is query to fetch last day of previous month in oracle?
+
+select trunc(sysdate,'mm')-1 from dual;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to get DDL of table in Oracle?
+
+Answer:
+
+To get DDL user needs to use dbms_metadata package and its get_ddl procedure,
+
+Select dbms_metadata.get_ddl (TABLE,’table_name’) from dual;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to calculate number of rows in table without using count function?
+
+Answer:
+
+Select table_name, num_rows from user_tables where table_name=’Employee’;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> How to fetch common records from two different tables which has not any joining condition.
+
+Answer:
+
+
+Select * from Table1
+
+Intersect
+
+Select * from Table2;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+--> Display 4 to 7 records from Employee table.
+
+
+select * from (select rownum rn,e.* from emp  e)
+where rn between 4 and 7;
+
+select * from (select e.*,row_number()over(order by empno) rn from emp e)
+where rn between 4 and 7;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+SQL Query to find second highest salary of Employee
+
+select MAX(Salary) from Employee WHERE Salary NOT IN (select MAX(Salary) from Emp)
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+TABLE dogs
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL
+
+TABLE cats
+  id INTEGER NOT NULL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL
+
+Write a query that select all distinct pet names.
+
+SELECT NAME FROM DOGS
+UNION
+SELECT NAME FROM CATS;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+TABLE sessions
+  id INTEGER PRIMARY KEY,
+  userId INTEGER NOT NULL,
+  duration DECIMAL NOT NULL
+  
+Write a query that selects userId and average session duration for each user who has more than one session.
+
+SELECT USERID,AVG(DURATION)
+FROM SESSIONS
+GROUP BY USERID
+HAVING COUNT(DURATION)>1  
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+select ename,length_city 
+from (select a.*, rownum r from 
+       (select length(ename) length_city,ename from emp order by length_city, ename) a) 
+where r in (1,(select count(*) from emp))
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+SUM OF SAL WITHOUT USING SUM FUNCTION
+
+select deptno,floor(count(0) * avg(sal))
+from emp
+group by deptno
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+MIN SAL WITHOUT USING MIN FUNCTION.
+
+SELECT sal
+FROM emp
+WHERE sal <= all (  SELECT sal    FROM emp  )
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+MAX SAL WITHOUT USING MAX FUNCTION.
+
+SELECT sal
+FROM emp
+WHERE sal >= all (  SELECT sal    FROM emp  )
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
